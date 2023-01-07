@@ -1,13 +1,25 @@
 use zoon::{named_color::*, *};
 
+// ------ ------
+//    States
+// ------ ------
+
 #[static_ref]
 fn counter() -> &'static Mutable<u32> {
     Mutable::new(0)
 }
 
+// ------ ------
+//   Commands
+// ------ ------
+
 fn increment() {
     counter().update(|counter| counter + 1)
 }
+
+// ------ ------
+//     View
+// ------ ------
 
 fn root() -> impl Element {
     Row::new()
@@ -29,6 +41,10 @@ fn increment_button() -> impl Element {
         .label("Increment!")
         .on_press(increment)
 }
+
+// ------ ------
+//     Start
+// ------ ------
 
 fn main() {
     start_app("app", root);
