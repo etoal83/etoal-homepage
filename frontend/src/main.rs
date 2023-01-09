@@ -1,3 +1,4 @@
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 use zoon::{named_color::*, *};
 
 // ------ ------
@@ -5,16 +6,25 @@ use zoon::{named_color::*, *};
 // ------ ------
 
 #[static_ref]
-fn counter() -> &'static Mutable<u32> {
-    Mutable::new(0)
+fn canvas_context() -> &'static Mutable<Option<SendWrapper<CanvasRenderingContext2d>>> {
+    Mutable::new(None)
 }
 
 // ------ ------
 //   Commands
 // ------ ------
 
-fn increment() {
-    counter().update(|counter| counter + 1)
+fn set_canvas_context(canvas: HtmlCanvasElement) {
+    let ctx = canvas
+        .get_context("2d")
+        .unwrap_throw()
+        .unwrap_throw()
+        .unchecked_into::<CanvasRenderingContext2d>();
+    canvas_context().set(Some(SendWrapper::new(ctx)));
+}
+
+fn remove_canvas_context() {
+    canvas_context().take();
 }
 
 // ------ ------
@@ -22,24 +32,20 @@ fn increment() {
 // ------ ------
 
 fn root() -> impl Element {
-    Row::new()
+    Column::new()
         .s(Align::center())
-        .s(Transform::new().move_up(20))
-        .s(Gap::both(20))
-        .s(Font::new().color(GRAY_0).size(30))
-        .item(increment_button())
-        .item_signal(counter().signal())
+        .s(Borders::all(Border::new().color(GRAY_7)))
+        .s(RoundedCorners::all(30))
+        .s(Clip::both())
+        .item(canvas())
 }
 
-fn increment_button() -> impl Element {
-    let (hovered, hovered_signal) = Mutable::new_and_signal(false);
-    Button::new()
-        .s(Padding::new().x(12).y(7))
-        .s(RoundedCorners::all(10))
-        .s(Background::new().color_signal(hovered_signal.map_bool(|| GREEN_7, || GREEN_8)))
-        .on_hovered_change(move |is_hovered| hovered.set(is_hovered))
-        .label("Increment!")
-        .on_press(increment)
+fn canvas() -> impl Element {
+    Canvas::new()
+        .width(300)
+        .height(300)
+        .after_insert(set_canvas_context)
+        .after_remove(|_| remove_canvas_context())
 }
 
 // ------ ------
