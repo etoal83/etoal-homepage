@@ -4,6 +4,7 @@ name = "frontend"
 edition = "2021"
 
 [dependencies]
+chrono = "0.4"
 zoon = { git = "https://github.com/MoonZoon/MoonZoon", branch = "main" }
 
 [dependencies.web-sys]
