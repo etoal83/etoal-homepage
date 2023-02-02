@@ -5,8 +5,24 @@ use zoon::{named_color::*, *};
 const PI: f64 = std::f64::consts::PI;
 
 // ------ ------
+//     Types
+// ------ ------
+
+#[derive(Clone, Copy, PartialEq, PartialOrd)]
+enum Page {
+    Home,
+    Work,
+    Unknown,
+}
+
+// ------ ------
 //    States
 // ------ ------
+
+#[static_ref]
+fn page() -> &'static Mutable<Page> {
+    Mutable::new(Page::Unknown)
+}
 
 #[static_ref]
 fn canvas_context() -> &'static Mutable<Option<SendWrapper<CanvasRenderingContext2d>>> {
@@ -21,6 +37,10 @@ fn animation_loop() -> &'static Mutable<Option<SendWrapper<AnimationLoop>>> {
 // ------ ------
 //   Commands
 // ------ ------
+
+fn set_page(new_page: Page) {
+    page().set_neq(new_page)
+}
 
 fn set_canvas_context(canvas: HtmlCanvasElement) {
     let ctx = canvas
@@ -60,7 +80,7 @@ fn tick() {
             ctx.set_stroke_style(&"white".apply(JsValue::from));
             ctx.set_fill_style(&"gray".apply(JsValue::from));
             ctx.set_line_cap("round");
-            
+
             // Hour marks
             ctx.save();
             ctx.set_line_width(8.);
@@ -89,9 +109,7 @@ fn tick() {
 
             // Write Hours
             ctx.save();
-            ctx.rotate(
-                (PI / 6.) * hour + (PI / 360.) * minute + (PI / 21600.) * second
-            );
+            ctx.rotate((PI / 6.) * hour + (PI / 360.) * minute + (PI / 21600.) * second);
             ctx.set_line_width(14.);
             ctx.begin_path();
             ctx.move_to(-20., 0.);
@@ -149,18 +167,70 @@ fn tick() {
 fn root() -> impl Element {
     Column::new()
         .s(Align::center())
-        .s(Borders::all(Border::new().color(GRAY_7)))
-        .s(RoundedCorners::all(30))
+        .s(Gap::both(20))
         .s(Clip::both())
+        .item(page_content())
         .item(canvas())
+}
+
+fn page_content() -> impl Element {
+    El::new().child_signal(page().signal().map(|page| {
+        match page {
+            Page::Home => El::new()
+                .s(Font::new().color(GRAY_2))
+                .child("Hello💚")
+                .into_raw_element(),
+            Page::Work => El::new()
+                .s(Font::new().color(GRAY_0))
+                .child("Works")
+                .into_raw_element(),
+            Page::Unknown => El::new()
+                .s(Font::new().color(GRAY_2))
+                .child("Unknown")
+                .into_raw_element(),
+        }
+    }))
 }
 
 fn canvas() -> impl Element {
     Canvas::new()
         .width(300)
         .height(300)
+        .s(Borders::all(Border::new().color(GRAY_7)))
+        .s(RoundedCorners::all(30))
         .after_insert(set_canvas_context)
         .after_remove(|_| remove_canvas_context())
+}
+
+// ------ ------
+//    Routes
+// ------ ------
+
+#[route]
+#[derive(Clone)]
+enum Route {
+    #[route()]
+    Home,
+
+    #[route("works")]
+    Works,
+    #[route("works", slug)]
+    Work { slug: String },
+}
+
+#[static_ref]
+fn router() -> &'static Router<Route> {
+    Router::new(|route: Option<Route>| async {
+        let Some(route) = route else { return set_page(Page::Unknown) };
+
+        match route {
+            Route::Home => set_page(Page::Home),
+            Route::Works => set_page(Page::Work),
+            Route::Work { slug } => {
+                set_page(Page::Work);
+            }
+        }
+    })
 }
 
 // ------ ------
@@ -168,5 +238,6 @@ fn canvas() -> impl Element {
 // ------ ------
 
 fn main() {
+    router();
     start_app("app", root);
 }
