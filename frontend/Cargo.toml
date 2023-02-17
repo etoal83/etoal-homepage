@@ -4,4 +4,13 @@ name = "frontend"
 edition = "2021"
 
 [dependencies]
+chrono = "0.4"
+strum = { version = "0.24", features = ["derive"] }
+strum_macros = "0.24"
 zoon = { git = "https://github.com/MoonZoon/MoonZoon", branch = "main" }
+
+[dependencies.web-sys]
+version = "0.3.60"
+features = [
+  'CanvasRenderingContext2d'
+]

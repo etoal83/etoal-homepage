@@ -1,20 +1,33 @@
+mod works;
+
 use zoon::{named_color::*, *};
+
+// ------ ------
+//     Types
+// ------ ------
+
+#[derive(Clone, Copy, PartialEq, PartialOrd)]
+enum Page {
+    Home,
+    Work,
+    Unknown,
+}
 
 // ------ ------
 //    States
 // ------ ------
 
 #[static_ref]
-fn counter() -> &'static Mutable<u32> {
-    Mutable::new(0)
+fn page() -> &'static Mutable<Page> {
+    Mutable::new(Page::Unknown)
 }
 
 // ------ ------
 //   Commands
 // ------ ------
 
-fn increment() {
-    counter().update(|counter| counter + 1)
+fn set_page(new_page: Page) {
+    page().set_neq(new_page)
 }
 
 // ------ ------
@@ -22,24 +35,55 @@ fn increment() {
 // ------ ------
 
 fn root() -> impl Element {
-    Row::new()
+    Column::new()
         .s(Align::center())
-        .s(Transform::new().move_up(20))
         .s(Gap::both(20))
-        .s(Font::new().color(GRAY_0).size(30))
-        .item(increment_button())
-        .item_signal(counter().signal())
+        .s(Clip::both())
+        .s(Font::new().color(GRAY_2))
+        .item(page_content())
 }
 
-fn increment_button() -> impl Element {
-    let (hovered, hovered_signal) = Mutable::new_and_signal(false);
-    Button::new()
-        .s(Padding::new().x(12).y(7))
-        .s(RoundedCorners::all(10))
-        .s(Background::new().color_signal(hovered_signal.map_bool(|| GREEN_7, || GREEN_8)))
-        .on_hovered_change(move |is_hovered| hovered.set(is_hovered))
-        .label("Increment!")
-        .on_press(increment)
+fn page_content() -> impl Element {
+    El::new().child_signal(page().signal().map(|page| match page {
+        Page::Home => El::new().child("Hello💚").into_raw_element(),
+        Page::Work => works::page_content().into_raw_element(),
+        Page::Unknown => El::new().child("Unknown").into_raw_element(),
+    }))
+}
+
+// ------ ------
+//    Routes
+// ------ ------
+
+#[route]
+#[derive(Clone)]
+enum Route {
+    #[route()]
+    Home,
+
+    #[route("works")]
+    Works,
+    #[route("works", slug)]
+    Work { slug: works::Slug },
+}
+
+#[static_ref]
+fn router() -> &'static Router<Route> {
+    Router::new(|route: Option<Route>| async {
+        let Some(route) = route else { return set_page(Page::Unknown) };
+
+        match route {
+            Route::Home => set_page(Page::Home),
+            Route::Works => {
+                set_page(Page::Work);
+                works::set_slug(works::Slug::Root);
+            }
+            Route::Work { slug } => {
+                set_page(Page::Work);
+                works::set_slug(slug);
+            }
+        }
+    })
 }
 
 // ------ ------
@@ -47,5 +91,6 @@ fn increment_button() -> impl Element {
 // ------ ------
 
 fn main() {
+    router();
     start_app("app", root);
 }
