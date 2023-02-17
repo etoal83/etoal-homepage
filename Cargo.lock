@@ -639,6 +639,8 @@ name = "frontend"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "strum",
+ "strum_macros",
  "web-sys",
  "zoon",
 ]
