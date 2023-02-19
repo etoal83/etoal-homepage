@@ -1,3 +1,4 @@
+mod dm_waving_dots_square;
 mod mdn_clock_example;
 
 use std::borrow::Cow;
@@ -11,6 +12,7 @@ use zoon::{named_color::*, *};
 pub enum Slug {
     Root,
     MdnClockExample,
+    DmWavingDotsSquare,
 }
 
 impl RouteSegment for Slug {
@@ -48,5 +50,6 @@ pub fn page_content() -> impl Element {
     El::new().child_signal(slug().signal().map(|slug| match slug {
         Slug::Root => El::new().child("WorkRoot").into_raw_element(),
         Slug::MdnClockExample => mdn_clock_example::page_content().into_raw_element(),
+        Slug::DmWavingDotsSquare => dm_waving_dots_square::page_content().into_raw_element(),
     }))
 }
