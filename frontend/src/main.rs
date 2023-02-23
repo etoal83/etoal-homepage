@@ -1,3 +1,4 @@
+mod theme;
 mod works;
 
 use zoon::{named_color::*, *};
@@ -39,7 +40,8 @@ fn root() -> impl Element {
         .s(Align::center())
         .s(Gap::both(20))
         .s(Clip::both())
-        .s(Font::new().color(GRAY_2))
+        .s(Font::new().color_signal(theme::primary_text_color()))
+        .s(Background::new().color_signal(theme::secondary_background_color()))
         .item(page_content())
 }
 
