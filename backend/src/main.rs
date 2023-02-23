@@ -1,11 +1,11 @@
 use moon::*;
 
 async fn frontend() -> Frontend {
-    Frontend::new().title("New Project").append_to_head(
+    Frontend::new().title("Etoalium").append_to_head(
         "
         <style>
             html {
-                background-color: black;
+                background-color: #181825;
             }
         </style>",
     )

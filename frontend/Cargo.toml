@@ -4,7 +4,9 @@ name = "frontend"
 edition = "2021"
 
 [dependencies]
+catppuccin = "1.2"
 chrono = "0.4"
+rust-hsluv = "0.1.4"
 strum = { version = "0.24", features = ["derive"] }
 strum_macros = "0.24"
 zoon = { git = "https://github.com/MoonZoon/MoonZoon", branch = "main" }

@@ -376,6 +376,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "catppuccin"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5db0baaeef77583104bf08a4c0040f57540e636e341ff7e7d4711489dd16daaf"
+
+[[package]]
 name = "cc"
 version = "1.0.78"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -638,7 +644,9 @@ dependencies = [
 name = "frontend"
 version = "0.1.0"
 dependencies = [
+ "catppuccin",
  "chrono",
+ "rust-hsluv",
  "strum",
  "strum_macros",
  "web-sys",
