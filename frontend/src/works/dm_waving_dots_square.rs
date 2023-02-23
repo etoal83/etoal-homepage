@@ -83,6 +83,7 @@ pub fn page_content() -> impl Element {
     Canvas::new()
         .width(480)
         .height(480)
+        .s(Background::new().color(hsluv!(0., 0., 0.)))
         .s(Borders::all(Border::new().color(GRAY_7)))
         .s(RoundedCorners::all(15))
         .after_insert(set_canvas_context)
