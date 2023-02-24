@@ -1,3 +1,4 @@
+mod dm_seigaiha;
 mod dm_waving_dots_square;
 mod mdn_clock_example;
 
@@ -13,6 +14,7 @@ pub enum Slug {
     Root,
     MdnClockExample,
     DmWavingDotsSquare,
+    DmSeigaiha,
 }
 
 impl RouteSegment for Slug {
@@ -51,5 +53,6 @@ pub fn page_content() -> impl Element {
         Slug::Root => El::new().child("WorkRoot").into_raw_element(),
         Slug::MdnClockExample => mdn_clock_example::page_content().into_raw_element(),
         Slug::DmWavingDotsSquare => dm_waving_dots_square::page_content().into_raw_element(),
+        Slug::DmSeigaiha => dm_seigaiha::page_content().into_raw_element(),
     }))
 }
