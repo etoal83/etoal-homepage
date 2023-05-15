@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use std::str::FromStr;
 use strum::EnumString;
 use strum_macros::Display;
-use zoon::{named_color::*, *};
+use zoon::*;
 
 #[derive(Clone, Copy, Debug, Display, PartialEq, PartialOrd, EnumString)]
 #[strum(serialize_all = "kebab-case")]

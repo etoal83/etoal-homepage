@@ -1,7 +1,7 @@
 mod theme;
 mod works;
 
-use zoon::{named_color::*, *};
+use zoon::*;
 
 // ------ ------
 //     Types
