@@ -1,7 +1,9 @@
+.tool-versions
 target
 frontend/wasm-bindgen*
-frontend/wasm-opt*
+frontend/binaryen*
 frontend/pkg
+frontend_dist/
 MoonZoonCustom.toml
-frontend_dist/_api
-frontend_dist/index.html
+node_modules/
+package*
