@@ -36,21 +36,64 @@ fn set_page(new_page: Page) {
 // ------ ------
 
 fn root() -> impl Element {
-    Column::new()
-        .s(Align::center())
-        .s(Gap::both(20))
-        .s(Clip::both())
-        .s(Font::new().color_signal(theme::primary_text_color()))
+    Stack::new()
+        .s(Width::fill())
+        .s(Height::screen())
         .s(Background::new().color_signal(theme::secondary_background_color()))
-        .item(page_content())
+        .layer(Column::new()
+            .s(Height::screen())
+            .s(Font::new().color_signal(theme::primary_text_color()))
+            .item(header())
+            .item(page_content()))
 }
 
 fn page_content() -> impl Element {
-    El::new().child_signal(page().signal().map(|page| match page {
-        Page::Home => El::new().child("Hello💚").into_raw_element(),
-        Page::Work => works::page_content().into_raw_element(),
-        Page::Unknown => El::new().child("Unknown").into_raw_element(),
-    }))
+    El::new()
+        .s(Align::center())
+        .s(Gap::both(20))
+        .s(Clip::both())
+        .child_signal(page().signal().map(|page| match page {
+            Page::Home => El::new().child("Hello💚").into_raw_element(),
+            Page::Work => works::page_content().into_raw_element(),
+            Page::Unknown => El::new().child("Unknown").into_raw_element(),
+        }))
+}
+
+fn header() -> impl Element {
+    Row::with_tag(Tag::Nav)
+        .s(Height::exact(64))
+        .s(Padding::new().x(12))
+        .item(logo())
+}
+
+fn logo() -> impl Element {
+    Link::new()
+        .to("/")
+        .label(Row::new()
+            .item(logo_svg())
+            .item(Row::new()
+                .s(Padding::new().left(12))
+                .s(Font::new()
+                    .size(24)
+                    .weight(FontWeight::Bold)
+                    .family([
+                        FontFamily::new("Futura"),
+                        FontFamily::new("Century Gothic"),
+                        FontFamily::new("CenturyGothic"),
+                        FontFamily::new("Apple Sans"),
+                        FontFamily::SansSerif,
+                    ]))
+                .item("EtoAlium")
+            )
+        )
+}
+
+fn logo_svg() -> RawSvgEl<web_sys::SvgsvgElement> {
+    RawSvgEl::from_markup(include_str!("../../public/logo.svg"))
+        .unwrap_throw()
+        .attr("width", "50")
+        .attr("height", "40")
+        .style_signal("fill", theme::primary_text_color())
 }
 
 // ------ ------
